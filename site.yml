@@ -1,6 +1,6 @@
 ---
 - hosts: "{{ k8shosts|default(omit) }}"
-  connection: local
+  #connection: local
   vars:
       is_container: false
   become: yes

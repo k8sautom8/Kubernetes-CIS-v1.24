@@ -1,0 +1,96 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: vap-cis-minimize-privileged-containers-policy
+spec:
+  failurePolicy: Fail
+  paramKind:
+    apiVersion: k8sautom8.com/v1
+    kind: ValidationParameters
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["pods"]
+    - apiGroups: ["apps"]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["deployments", "replicasets", "daemonsets", "statefulsets"]
+    - apiGroups: ["batch"]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["jobs", "cronjobs"]
+  rules:
+  - apiGroups: [""]
+    apiVersions: ["v1"]
+    operations: ["CREATE", "UPDATE"]
+    resources: ["pods"]
+    scope: Cluster
+    rule:
+      expression: "object.spec.containers.all(c, !has(c.securityContext) || !has(c.securityContext.privileged) || !c.securityContext.privileged)"
+      message: "All Containers in pods must NOT set privileged to true. Please refer: https://hub.armosec.io/docs/c-0213"
+  - apiGroups: ["apps"]
+    apiVersions: ["v1"]
+    operations: ["CREATE", "UPDATE"]
+    resources: ["deployments", "replicasets", "daemonsets", "statefulsets"]
+    scope: Cluster
+    rule:
+      expression: "object.spec.template.spec.containers.all(c, !has(c.securityContext) || !has(c.securityContext.privileged) || !c.securityContext.privileged)"
+      message: "All Containers in Deployments, Replicasets, Daemonsets, Statefulsets must NOT set privileged to true. Please refer: https://hub.armosec.io/docs/c-0213"
+  - apiGroups: ["batch"]
+    apiVersions: ["v1"]
+    operations: ["CREATE", "UPDATE"]
+    resources: ["jobs", "cronjobs"]
+    scope: Cluster
+    rule:
+      expression: "object.spec.jobTemplate.spec.template.spec.containers.all(c, !has(c.securityContext) || !has(c.securityContext.privileged) || !c.securityContext.privileged)"
+      message: "All Containers in CronJobs must NOT set privileged to true. Please refer: https://hub.armosec.io/docs/c-0213"
+  - apiGroups: [""]
+    apiVersions: ["v1"]
+    operations: ["CREATE", "UPDATE"]
+    resources: ["pods"]
+    scope: Cluster
+    rule:
+      expression: "object.spec.initContainers.all(c, !has(c.securityContext) || !has(c.securityContext.privileged) || !c.securityContext.privileged)"
+      message: "All initContainers in pods must NOT set privileged to true. Please refer: https://hub.armosec.io/docs/c-0213"
+  - apiGroups: ["apps"]
+    apiVersions: ["v1"]
+    operations: ["CREATE", "UPDATE"]
+    resources: ["deployments", "replicasets", "daemonsets", "statefulsets"]
+    scope: Cluster
+    rule:
+      expression: "object.spec.template.spec.initContainers.all(c, !has(c.securityContext) || !has(c.securityContext.privileged) || !c.securityContext.privileged)"
+      message: "All initContainers in Deployments, Replicasets, Daemonsets, Statefulsets must NOT set privileged to true. Please refer: https://hub.armosec.io/docs/c-0213"
+  - apiGroups: ["batch"]
+    apiVersions: ["v1"]
+    operations: ["CREATE", "UPDATE"]
+    resources: ["jobs", "cronjobs"]
+    scope: Cluster
+    rule:
+      expression: "object.spec.jobTemplate.spec.template.spec.initContainers.all(c, !has(c.securityContext) || !has(c.securityContext.privileged) || !c.securityContext.privileged)"
+      message: "All initContainers in CronJobs must NOT set privileged to true. Please refer: https://hub.armosec.io/docs/c-0213"
+  - apiGroups: [""]
+    apiVersions: ["v1"]
+    operations: ["CREATE", "UPDATE"]
+    resources: ["pods"]
+    scope: Cluster
+    rule:
+      expression: "object.spec.ephemeralContainers.all(c, !has(c.securityContext) || !has(c.securityContext.privileged) || !c.securityContext.privileged)"
+      message: "All ephemeralContainers in pods must NOT set privileged to true. Please refer: https://hub.armosec.io/docs/c-0213"
+  - apiGroups: ["apps"]
+    apiVersions: ["v1"]
+    operations: ["CREATE", "UPDATE"]
+    resources: ["deployments", "replicasets", "daemonsets", "statefulsets"]
+    scope: Cluster
+    rule:
+      expression: "object.spec.template.spec.ephemeralContainers.all(c, !has(c.securityContext) || !has(c.securityContext.privileged) || !c.securityContext.privileged)"
+      message: "All ephemeralContainers in Deployments, Replicasets, Daemonsets, Statefulsets must NOT set privileged to true. Please refer: https://hub.armosec.io/docs/c-0213"
+  - apiGroups: ["batch"]
+    apiVersions: ["v1"]
+    operations: ["CREATE", "UPDATE"]
+    resources: ["jobs", "cronjobs"]
+    scope: Cluster
+    rule:
+      expression: "object.spec.jobTemplate.spec.template.spec.ephemeralContainers.all(c, !has(c.securityContext) || !has(c.securityContext.privileged) || !c.securityContext.privileged)"
+      message: "All ephemeralContainers in CronJobs must NOT set privileged to true. Please refer: https://hub.armosec.io/docs/c-0213"

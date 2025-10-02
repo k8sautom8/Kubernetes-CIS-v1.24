@@ -695,6 +695,31 @@
     - worker
 
 
+- name: "SCORED | 4.3.1 | PATCH | L1 | WORKER | Ensure that the kube-proxy metrics service is bound to localhost (Automated)"
+  block:
+  - name: "SCORED | 4.3.1 | PATCH | L1 | WORKER | Ensure that the kube-proxy metrics service is bound to localhost (Automated)"
+    ansible.builtin.shell: kubectl --kubeconfig={{ kubeconfig_path }} -n kube-system get cm kube-proxy -o yaml | grep -i metricsBindAddress
+    register: kube_proxy_configmap
+    changed_when: false
+  - name: "SCORED | 4.3.1 | PATCH | L1 | WORKER | Set fact for metricsBindAddress value"
+    set_fact:
+      metrics_bind_address: "{{ kube_proxy_configmap.stdout | regex_search('metricsBindAddress: \"(.*)\"', '\\1') }}"
+  - name: "SCORED | 4.3.1 | PATCH | L1 | WORKER | Print action needed if metricsBindAddress starts with 127.0.0.1 or localhost"
+    debug:
+      msg: "Action needed, metricsBindAddress is set to {{ metrics_bind_address }}."
+    when: metrics_bind_address is match('^(127\\.0\\.0\\.1|localhost):\\d+$')
+  - name: "SCORED | 4.3.1 | PATCH | L1 | WORKER | Print no action needed if metricsBindAddress is not 127.0.0.1 or localhost"
+    debug:
+      msg: "No action needed, metricsBindAddress is set to {{ metrics_bind_address }}."
+    when: metrics_bind_address is not match('^(127\\.0\\.0\\.1|localhost):\\d+$')
+  when: rule_4_3_1
+  tags:
+    - level1
+    - perms
+    - rule_4.3.1
+    - worker
+    - followup
+
 ########################################################
 #region kubelet configuration
 ########################################################

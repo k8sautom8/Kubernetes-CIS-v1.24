@@ -1,0 +1,34 @@
+# Validating Admission Policy
+# Name: Limit use of the Bind, Impersonate and Escalate permissions in the Kubernetes cluster
+#       The impersonate privilege allows a subject to impersonate other users gaining their rights to the cluster. 
+#       The bind privilege allows the subject to add a binding to a cluster role or role which escalates their effective permissions in the cluster. 
+#       The escalate privilege allows a subject to modify cluster roles to which they are bound, increasing their rights to that level.
+# Author: Abhijit Jadhav
+# Docs: https://hub.armosec.io/docs/c-0191
+# Severity: Medium
+
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: vap-cis-limit-bind-impersonate-escalate-perm-policy
+spec:
+  failurePolicy: Fail
+  paramKind:
+    apiVersion: k8sautom8.com/v1
+    kind: ValidationParameters
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["rbac.authorization.k8s.io"]
+        operations: ["CREATE", "UPDATE"]
+        apiVersions: ["v1"]
+        resources: ["clusterroles", "roles"]
+  validations:
+    # Deny if 'impersonate' is in the verbs list
+    - expression: "!object.rules.exists(r, r.verbs.exists(v, v == 'impersonate'))"
+      message: "Impersonate permission is not allowed in roles or clusterroles."
+    # Deny if 'bind' is in the verbs list
+    - expression: "!object.rules.exists(r, r.verbs.exists(v, v == 'bind'))"
+      message: "Bind permission is not allowed in roles or clusterroles."
+    # Deny if 'escalate' is in the verbs list
+    - expression: "!object.rules.exists(r, r.verbs.exists(v, v == 'escalate'))"
+      message: "Escalate permission is not allowed in roles or clusterroles."

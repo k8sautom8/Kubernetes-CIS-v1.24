@@ -1,0 +1,42 @@
+# Validating Admission Policy
+# Name: Limit use of the Bind, Impersonate and Escalate permissions in the Kubernetes cluster
+#       The impersonate privilege allows a subject to impersonate other users gaining their rights to the cluster. 
+#       The bind privilege allows the subject to add a binding to a cluster role or role which escalates their effective permissions in the cluster. 
+#       The escalate privilege allows a subject to modify cluster roles to which they are bound, increasing their rights to that level.
+# Author: Abhijit Jadhav
+# Docs: https://hub.armosec.io/docs/c-0191
+# Severity: Medium
+
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: "vap-cis-limit-bind-impersonate-escalate-perm-policy-binding"
+spec:
+  policyName: "vap-cis-limit-bind-impersonate-escalate-perm-policy"
+  validationActions: [Deny]
+  paramRef:
+    name: validation-parameters
+    parameterNotFoundAction: "Deny"
+  matchResources: {}
+
+### The namespace exclusion logic now moved into CRD, Parameter and embeded in Policy. This gives more flexibility on managing and maintaing common exclusions
+### You can still exclude additional app namespaces which are specific to the policy exclusion using following matchExpressions
+###
+# matchResources:
+#   namespaceSelector:
+#     matchExpressions:
+#     - key: kubernetes.io/metadata.name
+#       operator: NotIn
+#       values:
+#       - app-one-namespace
+#       - app-two-namespace
+###
+### OR using labels
+###
+# matchResources:
+#   namespaceSelector:
+#     matchExpressions:
+#       namsSpaceSelector:
+#         matchLabels:
+#           environment: prod
+

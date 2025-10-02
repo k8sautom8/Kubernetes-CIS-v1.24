@@ -1,0 +1,8 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: invalid-role-bind-escalate
+rules:
+  - apiGroups: [""]
+    resources: ["roles"]
+    verbs: ["impersonate", "get", "list"]

@@ -149,6 +149,8 @@ rule_4_2_10: true  # PATCH | L1 | WORKER | Ensure that the --rotate-certificates
 rule_4_2_11: true  # PATCH | L1 | WORKER | Verify that the RotateKubeletServerCertificate argument is set to true. NOTE: serverTLSBootstrap will be set to true; not RotateKubeletServerCertificate. any of these have same effect
 rule_4_2_12: true  # PATCH | L1 | WORKER | Ensure that the Kubelet only makes use of Strong Cryptographic Ciphers 
 rule_4_2_13: true  # PATCH | L1 | WORKER | Ensure that a limit is set on pod PIDs. NOTE: kubelet_pod_pid_limit: PodPidsLimit is set to 1024 which may be high or low for your requirement.
+rule_4_3_1: true   # PATCH | L1 | WORKER | Ensure that the kube-proxy metrics service is bound to localhost (Automated)
+
   #LEVEL 2 | WORKER
 rule_4_2_8: true   # PATCH | L2 | WORKER | Ensure that the eventRecordQPS argument is set to a level which ensures appropriate event capture. NOTE: Do not set 'event_record_qps' anything other than 0; Events are an important source of security information and analytics that ensure that your environment is consistently monitored using the event data
 
@@ -163,7 +165,7 @@ rule_5_1_4: false  # AUDIT | L1 | MASTER | Minimize access to create pods
 rule_5_1_5: true   # AUDIT | L1 | MASTER | Ensure that default service accounts are not actively used. NOTE: Kubernetes Version 1.30.0 and above.
 rule_5_1_6: false  # AUDIT | L1 | MASTER | Ensure that Service Account Tokens are only mounted where necessary. NOTE: Not implemented
 rule_5_1_7: true   # AUDIT | L1 | MASTER | Avoid use of system:masters group
-rule_5_1_8: false  # AUDIT | L1 | MASTER | Limit use of the Bind, Impersonate and Escalate permissions in the Kubernetes cluster. NOTE: Not implemented
+rule_5_1_8: true   # AUDIT | L1 | MASTER | Limit use of the Bind, Impersonate and Escalate permissions in the Kubernetes cluster.
 rule_5_2_1: false  # AUDIT | L1 | MASTER | Ensure that the cluster has at least one active policy control mechanism in place. NOTE: Not implemented 
 rule_5_2_2: true   # AUDIT | L1 | MASTER | Minimize the admission of privileged containers. NOTE: Kubernetes Version 1.30.0 and above.
 rule_5_2_3: true   # AUDIT | L1 | MASTER | Minimize the admission of containers wishing to share the host process ID namespace. NOTE: Kubernetes Version 1.30.0 and above.
@@ -312,4 +314,5 @@ vap_cis_restrict_hostport_policy: "vap-cis-restrict-hostport-policy.yml"
 vap_cis_restrict_hostport_policy_binding: "vap-cis-restrict-hostport-policy-binding.yml"
 vap_cis_prevent_system_master_group_policy: "vap-cis-prevent-system-master-group-policy.yml"
 vap_cis_prevent_system_master_group_policy_binding: "vap-cis-prevent-system-master-group-policy-binding.yml"
-
+vap_cis_limit_bind_impersonate_escalate_perm_policy: "vap-cis-limit-bind-impersonate-escalate-perm-policy.yml"
+vap_cis_limit_bind_impersonate_escalate_perm_policy_binding: "vap-cis-limit-bind-impersonate-escalate-perm-policy-binding.yml"
